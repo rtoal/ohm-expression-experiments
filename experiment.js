@@ -114,13 +114,16 @@ function makeBinaryExpression(result, ops, rest) {
 }
 
 // The third grammar makes use of Ohm's parameterized rules, specifically the
-// NonemptyListOf rule.
+// NonemptyListOf rule. This works because all uses of NonemptyListOf do the
+// "same thing." How will this work when there are multiple uses of NonemptyListOf
+// in the same grammar that have different semantics? That would be for another
+// experiment.
 
 const grammar3 = ohm.grammar(`ExpressionLanguage {
   Program = Exp end
   Exp     = NonemptyListOf<Term, addop>
   Term    = NonemptyListOf<Factor, mulop>
-  Factor = "(" Exp ")"  --parens
+  Factor = "(" Exp ")"                     --parens
           | number
           | id
   addop   = "+" | "-"
@@ -129,8 +132,25 @@ const grammar3 = ohm.grammar(`ExpressionLanguage {
   number  = digit+
 }`);
 
+const semantics3 = grammar3.createSemantics().addOperation('tree', {
+  Program(body, _) {return new Program(body.tree());},
+  NonemptyListOf(left, op, right) {return makeBinaryExpression(left.tree(), op.tree(), right.tree());},
+  Factor_parens(open, expression, close) {return expression.tree();},
+  number(chars) {return new IntegerLiteral(+this.sourceString);},
+  id(char, moreChars) {return new Identifier(this.sourceString);},
+  _terminal() {return this.sourceString}
+});
+
+function makeBinaryExpression(result, ops, rest) {
+  for (let i = 0; i < ops.length; i++) {
+    result = new BinaryExpression(result, ops[i], rest[i]);
+  }
+  return result;
+}
+
 // The fourth grammar leaves operator precedence and associativity to the semantics,
-// where we do the classic precedence stuff with stacks.
+// where we do the classic precedence stuff with stacks. This gives us the lightest
+// grammar but the most complex semantics.
 
 const grammar4 = ohm.grammar(`ExpressionLanguage {
   Program = Exp end
@@ -151,7 +171,7 @@ const grammar4 = ohm.grammar(`ExpressionLanguage {
 // they work. See the tests directory in the repo for a real illustration of how to
 // test.
 
-for (let [s,g] of [[semantics1, grammar1], [semantics2, grammar2]]) {
+for (let [s,g] of [[semantics1, grammar1], [semantics2, grammar2], [semantics3, grammar3]]) {
   for (let source of ['3', 'x', '5 * (2 + dog) / q - 3 / q']) {
     console.log(s(g.match(source)).tree().toString());
   }
