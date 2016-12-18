@@ -1,0 +1,26 @@
+{
+  "name": "ohm-expression-experiments",
+  "version": "1.0.0",
+  "description": "A look at four ways to specify expressions in an Ohm grammar",
+  "main": "experiment.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rtoal/ohm-expression-experiments.git"
+  },
+  "keywords": [
+    "ohm",
+    "grammar"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rtoal/ohm-expression-experiments/issues"
+  },
+  "homepage": "https://github.com/rtoal/ohm-expression-experiments#readme",
+  "dependencies": {
+    "ohm-js": "^0.12.3"
+  }
+}
