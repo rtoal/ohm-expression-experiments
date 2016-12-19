@@ -181,13 +181,11 @@ function makeTree(left, ops, rights, minPrecedence = 0) {
   return left;
 }
 
-// Finally, here's a quick illustration for each of the semantics, just to show how
-// they work. See the tests directory in the repo for a real illustration of how to
-// test.
+// Here we export each grammar/semantics pair for our unit tests.
 
-for (let [s,g] of [[semantics1, grammar1], [semantics2, grammar2],
-                   [semantics3, grammar3], [semantics4, grammar4]]) {
-  for (let source of ['3', 'x', '5 * (2 + dog) / q - 3 / q']) {
-    console.log(s(g.match(source)).tree().toString());
-  }
-}
+module.exports = [
+  {name: 'Left-recursive', grammar: grammar1, semantics: semantics1},
+  {name: 'Traditional PEG', grammar: grammar2, semantics: semantics2},
+  {name: 'Parameterized', grammar: grammar3, semantics: semantics3},
+  {name: 'Precedence-in-semantics', grammar: grammar4, semantics: semantics4}
+];
