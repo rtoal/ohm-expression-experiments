@@ -3,7 +3,7 @@ const assert = require('assert');
 
 for (let {name, grammar, semantics} of fixture) {
 
-  describe(name + ' grammar', () => {
+  describe(`The ${name} grammar`, () => {
 
     it('can parse a single integer literal expression', done => {
       let ast = semantics(grammar.match('20')).tree().toString();
