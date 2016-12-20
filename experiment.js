@@ -109,7 +109,7 @@ const semantics2 = grammar2.createSemantics().addOperation('tree', {
 // This grammar cannot help us with associativity, so we must define it here.
 const associativity = {'+': 'L', '-': 'L', '*': 'L', '/': 'L', '**': 'R'};
 
-// We know that all lists will have ops at the same precendence levels
+// We know that all lists will have ops at the same precedence levels
 function makeBinaryExpression(first, ops, rest) {
   const applyLeft = (x, y) => new BinaryExpression(x, ops.shift(), y);
   const applyRight = (x, y) => new BinaryExpression(y, ops.pop(), x);
@@ -183,7 +183,7 @@ const semantics4 = grammar4.createSemantics().addOperation('tree', {
 // We don’t get precedence *or* associativity in this grammar.
 const precedence = {'+': 0, '-': 0, '*': 1, '/': 1, '**': 2};
 
-// Modified Richards and Whitby-Stevens operator precendence “parse”
+// Modified Richards and Whitby-Stevens precedence climbing method
 function makeTree(left, ops, rights, minPrecedence = 0) {
   while (ops.length > 0 && precedence[ops[0]] >= minPrecedence) {
     let op = ops.shift();

@@ -39,7 +39,7 @@ for (let {name, grammar, semantics} of fixture) {
       done();
     });
 
-    it('looks at all three levels of precendence', done => {
+    it('looks at all three levels of precedence', done => {
       let ast = semantics(grammar.match('1 - 2 / 3 ** 4')).tree().toString();
       assert.strictEqual(ast, '(- 1 (/ 2 (** 3 4)))');
       ast = semantics(grammar.match('1 - 2 ** 3 * 4')).tree().toString();
