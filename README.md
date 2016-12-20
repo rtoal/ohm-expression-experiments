@@ -9,7 +9,8 @@ Exp     = Exp addop Term --binary
         | Term
 Term    = Term mulop Factor --binary
         | Factor
-Factor  = "(" Exp ")" --parens
+Factor  = Primary expop Factor --binary
+Primary = "(" Exp ")" --parens
         | number
         | id
 ```
@@ -19,9 +20,7 @@ Factor  = "(" Exp ")" --parens
 ```
 Exp     = Term (addop Term)*
 Term    = Factor (mulop Factor)*
-Factor  = "(" Exp ")" --parens
-        | number
-        | id
+Factor  = Primary (expop Primary)*
 ```
 
 **Using Ohm’s parameterized rules**
@@ -29,18 +28,13 @@ Factor  = "(" Exp ")" --parens
 ```
 Exp     = NonemptyListOf<Term, addop>
 Term    = NonemptyListOf<Factor, mulop>
-Factor  = "(" Exp ")" --parens
-        | number
-        | id
+Factor  = NonemptyListOf<Primary, expop>
 ```
 
 **Leaving precedence resolution to the semantics**
 
 ```
 Exp     = Primary (binop Primary)*
-Primary = "(" Exp ")" --parens
-        | number
-        | id
 ```
 
 This experiment writes the same grammar all four ways, with associated semantics.

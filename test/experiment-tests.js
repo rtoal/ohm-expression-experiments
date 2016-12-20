@@ -39,17 +39,35 @@ for (let {name, grammar, semantics} of fixture) {
       done();
     });
 
+    it('looks at all three levels of precendence', done => {
+      let ast = semantics(grammar.match('1 - 2 / 3 ** 4')).tree().toString();
+      assert.strictEqual(ast, '(- 1 (/ 2 (** 3 4)))');
+      ast = semantics(grammar.match('1 - 2 ** 3 * 4')).tree().toString();
+      assert.strictEqual(ast, '(- 1 (* (** 2 3) 4))');
+      ast = semantics(grammar.match('1 ** 2 + 3 * 4')).tree().toString();
+      assert.strictEqual(ast, '(+ (** 1 2) (* 3 4))');
+      done();
+    });
+
+    it('knows that exponentiation is right associative', done => {
+      let ast = semantics(grammar.match('1 ** 2 ** 3 ** 4 ** 5')).tree().toString();
+      assert.strictEqual(ast, '(** 1 (** 2 (** 3 (** 4 5))))');
+      ast = semantics(grammar.match('1 ** (2 ** 3) ** 4 - 5')).tree().toString();
+      assert.strictEqual(ast, '(- (** 1 (** (** 2 3) 4)) 5)');
+      done();
+    });
+
     it('can parse a long string without parentheses', done => {
-      let source = '10 + 3 * 8 - 2 * 50 + 1 + x / 10';
+      let source = '10 + 3 * 8 ** 7 - 2 * 50 + 1 + x / 10';
       let ast = semantics(grammar.match(source)).tree().toString();
-      assert.strictEqual(ast, '(+ (+ (- (+ 10 (* 3 8)) (* 2 50)) 1) (/ x 10))');
+      assert.strictEqual(ast, '(+ (+ (- (+ 10 (* 3 (** 8 7))) (* 2 50)) 1) (/ x 10))');
       done();
     });
 
     it('can parse a crazy string', done => {
-      let source = '5*(3/1-(7*(6-x-1))+8/9*0-2)';
+      let source = '5*(3/1-(7**(6-x-1))+8/9*0-2)';
       let ast = semantics(grammar.match(source)).tree().toString();
-      assert.strictEqual(ast, '(* 5 (- (+ (- (/ 3 1) (* 7 (- (- 6 x) 1))) (* (/ 8 9) 0)) 2))');
+      assert.strictEqual(ast, '(* 5 (- (+ (- (/ 3 1) (** 7 (- (- 6 x) 1))) (* (/ 8 9) 0)) 2))');
       done();
     });
   });
